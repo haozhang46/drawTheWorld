@@ -35,192 +35,58 @@
 ├── CONTEXT.md
 ├── docs/adr/0001-marker-first-anchors.md
 ├── docs/adr/0002-world-save-requires-anchor.md
-├── package.json
+├── docs/design/tokens.md           ← FE scaffold (Task 1, docs only)
+├── docs/api/mvp.md                 ← BE scaffold (Task 1)
+├── docs/db/schema.md               ← BE scaffold (Task 1)
+├── package.json                    ← Task 2+
 ├── pnpm-workspace.yaml
 ├── turbo.json
 ├── packages/
+│   ├── ui/                         ← later: code tokens from docs/design/tokens.md
 │   └── domain/
-│       ├── package.json
-│       ├── src/
-│       │   ├── index.ts
-│       │   ├── constants.ts
-│       │   ├── geo.ts
-│       │   └── schemas.ts
-│       └── src/schemas.test.ts
-├── apps/
-│   ├── api/
-│   │   ├── package.json
-│   │   ├── drizzle.config.ts
-│   │   ├── src/
-│   │   │   ├── index.ts
-│   │   │   ├── env.ts
-│   │   │   ├── db/
-│   │   │   │   ├── client.ts
-│   │   │   │   └── schema.ts
-│   │   │   ├── auth.ts
-│   │   │   ├── storage/
-│   │   │   │   └── s3.ts
-│   │   │   ├── safety/
-│   │   │   │   ├── port.ts
-│   │   │   │   └── stub.ts
-│   │   │   ├── marker/
-│   │   │   │   └── generateMarkerPng.ts
-│   │   │   ├── domain/
-│   │   │   │   ├── density.ts
-│   │   │   │   ├── drafts.ts
-│   │   │   │   ├── placements.ts
-│   │   │   │   ├── nearby.ts
-│   │   │   │   └── reports.ts
-│   │   │   └── routes/
-│   │   │       ├── assets.ts
-│   │   │       ├── drafts.ts
-│   │   │       ├── markers.ts
-│   │   │       ├── placements.ts
-│   │   │       ├── nearby.ts
-│   │   │       └── reports.ts
-│   │   └── src/**/*.test.ts
-│   └── mobile/
-│       ├── package.json
-│       ├── app.json
-│       ├── app/
-│       │   ├── _layout.tsx
-│       │   ├── index.tsx
-│       │   ├── sign-in.tsx
-│       │   ├── draft/new.tsx
-│       │   ├── marker/[id].tsx
-│       │   ├── ar/[markerId].tsx
-│       │   └── placement/[id].tsx
-│       ├── src/
-│       │   ├── api/client.ts
-│       │   ├── auth/session.ts
-│       │   ├── map/NearbyMap.tsx
-│       │   ├── map/clusterPlacements.ts
-│       │   └── ar/types.ts
-│       └── modules/marker-ar/
-│           ├── src/index.ts
-│           ├── ios/
-│           └── android/
+└── apps/
+    ├── api/
+    └── mobile/
 ```
 
 ---
 
-### Task 1: Monorepo + `@dtw/domain` constants and schemas
+### Task 1: Scaffold docs — FE design tokens + BE API/DB design
 
-**Files:**
-- Create: `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `.gitignore`, `packages/domain/package.json`, `packages/domain/tsconfig.json`, `packages/domain/src/constants.ts`, `packages/domain/src/geo.ts`, `packages/domain/src/schemas.ts`, `packages/domain/src/index.ts`, `packages/domain/src/schemas.test.ts`, `packages/domain/src/geo.test.ts`
+**Purpose:** Design shelf only — **no application code**. FE = token doc (colors, gaps, radii, type). BE = API contract + DB schema design. Later tasks implement against these docs.
 
-**Interfaces:**
-- Consumes: nothing
-- Produces: `@dtw/domain` exports below
+**Files (markdown only):**
+- Create: `docs/design/tokens.md`
+- Create: `docs/api/mvp.md`
+- Create: `docs/db/schema.md`
 
-```ts
-// packages/domain/src/constants.ts
-export const DENSITY_CAP_PER_ANCHOR = 10;
-export const DRAFT_TTL_HOURS = 24;
-export const NEARBY_RADIUS_METERS = 500;
-export const NEARBY_LIMIT = 50;
-export const CLUSTER_RADIUS_METERS = 25;
-```
+**Source:** Figma Author Flow (`eYmEd1TdLcmVlHbpocigO7`) / `docs/design/penpot/author-flow/`
 
-```ts
-// packages/domain/src/geo.ts
-export type LatLng = { lat: number; lng: number };
-export function haversineMeters(a: LatLng, b: LatLng): number;
-export function isWithinRadius(point: LatLng, center: LatLng, radiusMeters: number): boolean;
-```
+**`docs/design/tokens.md` must list:** colors (ink, surfaces, accent, sheet, text roles, danger, map/draft pins), space scale (gaps/padding), radii, typography roles (display/title/body/caption) with sizes — values from Author Flow.
 
-```ts
-// packages/domain/src/schemas.ts — Zod
-export const MapPositionSchema; // { lat, lng, accuracyMeters?: number }
-export const PoseSchema; // { position: {x,y,z}, rotation: {x,y,z,w} } relative to Anchor
-export const AssetIdSchema; // uuid
-export const DraftStatusSchema; // 'active' | 'expired' | 'consumed' | 'discarded'
-export const SafetyStatusSchema; // 'pending' | 'approved' | 'rejected'
-export const CreateDraftInputSchema;
-export const SavePlacementInputSchema; // draftId?, assetId, markerId, mapPosition, pose, showAuthorName?: boolean
-```
+**`docs/db/schema.md` must list:** tables `authors`, `assets`, `markers`, `drafts`, `placements`, `reports`; columns, PK/FK, uniqueness, density soft-hold, Nearby indexes.
 
-- [ ] **Step 1: Scaffold workspace**
+**`docs/api/mvp.md` must list:** each MVP route — method/path, auth, request/response, errors (health, auth, assets, drafts, markers, placements, nearby, reports, admin takedown).
 
-```bash
-cd /Users/hz/Desktop/fe/drawTheWorld
-# create root package.json name "draw-the-world", private, packageManager pnpm@9
-# pnpm-workspace.yaml: packages: ['packages/*', 'apps/*']
-# turbo.json pipeline: build, test, lint
-# .gitignore: node_modules, .turbo, dist, .env, ios/Pods, etc.
-pnpm install
-```
-
-- [ ] **Step 2: Write failing geo + schema tests**
-
-```ts
-// packages/domain/src/geo.test.ts
-import { haversineMeters, isWithinRadius } from './geo';
-
-test('haversine ~0 for same point', () => {
-  expect(haversineMeters({ lat: 31.23, lng: 121.47 }, { lat: 31.23, lng: 121.47 })).toBeLessThan(1);
-});
-
-test('500m radius includes nearby point', () => {
-  const center = { lat: 31.2300, lng: 121.4700 };
-  const near = { lat: 31.2310, lng: 121.4700 }; // ~111m
-  expect(isWithinRadius(near, center, 500)).toBe(true);
-});
-```
-
-```ts
-// packages/domain/src/schemas.test.ts
-import { PoseSchema, SavePlacementInputSchema } from './schemas';
-
-test('SavePlacementInput requires markerId and pose', () => {
-  const parsed = SavePlacementInputSchema.safeParse({
-    assetId: '00000000-0000-4000-8000-000000000001',
-    markerId: '00000000-0000-4000-8000-000000000002',
-    mapPosition: { lat: 31.23, lng: 121.47 },
-    pose: { position: { x: 0, y: 0, z: -0.5 }, rotation: { x: 0, y: 0, z: 0, w: 1 } },
-  });
-  expect(parsed.success).toBe(true);
-});
-```
-
-- [ ] **Step 3: Run tests — expect FAIL**
-
-Run: `pnpm --filter @dtw/domain test`
-
-Expected: FAIL (modules missing)
-
-- [ ] **Step 4: Implement constants, geo, schemas, index exports**
-
-- [ ] **Step 5: Run tests — expect PASS**
-
-Run: `pnpm --filter @dtw/domain test`
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add package.json pnpm-workspace.yaml turbo.json .gitignore packages/domain
-git commit -m "feat(domain): add MVP constants, geo helpers, and Zod schemas"
-```
+- [x] **Step 1: Write `docs/design/tokens.md` from Author Flow**
+- [x] **Step 2: Write `docs/db/schema.md`**
+- [x] **Step 3: Write `docs/api/mvp.md`**
+- [ ] **Step 4: Review with human — no code in this task**
 
 ---
 
-### Task 2: API app skeleton, DB schema, auth
+### Task 2: `@dtw/domain` + API app skeleton, DB schema, auth
 
 **Files:**
+- Create: `packages/domain/**` (constants, geo, Zod schemas + tests) aligned to `docs/api/mvp.md` / `docs/db/schema.md`
 - Create: `apps/api/package.json`, `apps/api/tsconfig.json`, `apps/api/drizzle.config.ts`, `apps/api/src/env.ts`, `apps/api/src/db/client.ts`, `apps/api/src/db/schema.ts`, `apps/api/src/auth.ts`, `apps/api/src/index.ts`, `apps/api/src/db/schema.test.ts`, `docker-compose.yml` (postgres + minio)
 
 **Interfaces:**
-- Consumes: `@dtw/domain` constants/schemas
-- Produces: Drizzle tables `authors`, `assets`, `markers`, `drafts`, `placements`, `reports`; Better Auth session helper `requireAuthor(c)`; `createApp()` Hono instance
+- Consumes: Task 1 docs (`docs/db/schema.md`, `docs/api/mvp.md`); implements Drizzle to match DB doc
+- Produces: `@dtw/domain` exports; Drizzle tables `authors`, `assets`, `markers`, `drafts`, `placements`, `reports`; Better Auth `requireAuthor(c)`; `createApp()` Hono; `GET /health`
 
 ```ts
-// apps/api/src/db/schema.ts (conceptual columns)
-// authors: id, displayName, createdAt
-// assets: id, authorId, storageKey, contentType, byteSize, safetyStatus, createdAt
-// markers: id, creatorAuthorId, imageStorageKey, patternHash, coCreationEnabled, mapPositionLat, mapPositionLng, createdAt
-// drafts: id, authorId, assetId nullable, lat, lng, softHoldAnchorId nullable, expiresAt, status, createdAt
-// placements: id, authorId, assetId, markerId, lat, lng, poseJson, showAuthorName, worldVisible, takenDownAt nullable, createdAt
-// reports: id, placementId, reporterAuthorId nullable, reason, createdAt, resolvedAt nullable
+// apps/api/src/db/schema.ts — columns MUST match docs/db/schema.md
 ```
 
 - [ ] **Step 1: Add docker-compose for Postgres 16 and MinIO**
