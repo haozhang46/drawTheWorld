@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844" fill="none">
+  <rect width="390" height="844" rx="40" fill="#1C1F1A"/>
+  <rect x="12" y="12" width="366" height="820" rx="32" fill="#2A2F28"/>
+  <!-- status bar -->
+  <text x="28" y="42" fill="#E8E6DF" font-family="system-ui, sans-serif" font-size="13" font-weight="600">9:41</text>
+  <text x="320" y="42" fill="#E8E6DF" font-family="system-ui, sans-serif" font-size="12">LTE</text>
+  <!-- camera viewport -->
+  <rect x="24" y="64" width="342" height="520" rx="20" fill="#3D4538"/>
+  <rect x="48" y="200" width="294" height="180" rx="8" stroke="#C8F07A" stroke-width="2" stroke-dasharray="8 6" fill="rgba(200,240,122,0.08)"/>
+  <text x="195" y="295" text-anchor="middle" fill="#C8F07A" font-family="system-ui, sans-serif" font-size="14" font-weight="600">F	hb</text>
+  <text x="195" y="318" text-anchor="middle" fill="#B8C4A8" font-family="system-ui, sans-serif" font-size="12">ÛL / ™b¹</text>
+  <!-- eligibility -->
+  <rect x="40" y="520" width="310" height="44" rx="12" fill="rgba(28,31,26,0.85)"/>
+  <text x="56" y="547" fill="#E8E6DF" font-family="system-ui, sans-serif" font-size="13"><'</text>
+  <rect x="120" y="534" width="160" height="10" rx="5" fill="#4A5344"/>
+  <rect x="120" y="534" width="118" height="10" rx="5" fill="#C8F07A"/>
+  <text x="298" y="547" fill="#C8F07A" font-family="system-ui, sans-serif" font-size="13" font-weight="600">74</text>
+  <!-- bottom sheet -->
+  <rect x="12" y="600" width="366" height="232" rx="28" fill="#F4F1EA"/>
+  <text x="36" y="644" fill="#1C1F1A" font-family="system-ui, sans-serif" font-size="20" font-weight="700">úË„i</text>
+  <text x="36" y="672" fill="#5C6356" font-family="system-ui, sans-serif" font-size="13">Ç{°: Captured Target1%ï9(sð Marker</text>
+  <rect x="36" y="700" width="318" height="48" rx="14" fill="#1C1F1A"/>
+  <text x="195" y="730" text-anchor="middle" fill="#C8F07A" font-family="system-ui, sans-serif" font-size="15" font-weight="600">n¤Âþ</text>
+  <text x="195" y="780" text-anchor="middle" fill="#7A8270" font-family="system-ui, sans-serif" font-size="12"> · (sð Marker \•</text>
+</svg>
