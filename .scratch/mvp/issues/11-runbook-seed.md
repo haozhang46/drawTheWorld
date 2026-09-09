@@ -13,3 +13,5 @@ Local runbook, seed Placement, `.scratch/mvp/qa-mvp.md` manual checklist.
 Task 11
 
 ## Comments
+
+- 2026-09-09: CI/CD conventions live at [`docs/ci/mvp.md`](../../../docs/ci/mvp.md) (ADR-0003). README/runbook should link there when Task 11 lands.
